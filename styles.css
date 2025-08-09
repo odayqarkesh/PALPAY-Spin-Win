@@ -1,0 +1,196 @@
+/* عام */
+* { margin:0; padding:0; box-sizing: border-box; }
+body{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  direction: rtl;
+}
+
+/* الحاوية */
+.container{
+  background: rgba(255,255,255,0.98);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+  padding: clamp(20px, 3vw, 40px);
+  width: 100%;
+  max-width: 900px; /* تم تقليل العرض قليلاً ليتناسب مع المحتوى الجديد */
+  text-align:center;
+}
+
+/* عنوان */
+h1{
+  color:#333;
+  margin-bottom: clamp(20px, 3vw, 35px); /* زيادة الهامش السفلي */
+  font-size: clamp(1.5rem, 2.8vw, 2.6rem);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.08);
+}
+
+/* قسم الإدخال */
+.game-section {
+  margin-bottom: 25px; /* زيادة الهامش السفلي */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 15px; /* زيادة الفراغ بين العناصر */
+}
+.input-group { width:100%; max-width:420px; }
+label { display:block; margin-bottom:8px; font-weight:700; color:#555; text-align:right; }
+input{
+  width:100%;
+  padding: 12px 14px;
+  border:2px solid #ddd;
+  border-radius:10px;
+  font-size: clamp(14px,1.6vw,18px);
+  text-align:center;
+  direction:ltr;
+  transition: all 0.3s ease;
+}
+input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,126,234,0.25); }
+
+/* العجلة */
+.wheel-container{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin: 25px 0; /* زيادة الهامش */
+}
+.wheel{
+  width: min(65vmin, 450px); /* تم تعديل الحجم */
+  height: min(65vmin, 450px);
+  border-radius:50%;
+  position:relative;
+  border: 8px solid #333;
+  transition: transform 4s cubic-bezier(0.17, 0.89, 0.32, 0.98);
+  transform: rotate(0deg);
+  background: conic-gradient(
+    #e74c3c 0deg 72deg,    /* 50 */
+    #27ae60 72deg 144deg,   /* شماسي */
+    #3498db 144deg 216deg,  /* 25 */
+    #f1c40f 216deg 288deg,  /* حظ أوفر */
+    #8e44ad 288deg 360deg   /* مطرة */
+  );
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* ===== تموضع جديد لتسميات القطاعات (للتوسيط الدقيق) ===== */
+.segment-label{
+  position:absolute;
+  width: 50%; /* عرض التسمية */
+  height: 50%; /* ارتفاع التسمية */
+  top: 0;
+  left: 25%;
+  transform-origin: bottom center; /* نقطة الدوران من منتصف الحافة السفلية */
+  color:white;
+  font-weight:700;
+  text-shadow:1px 1px 3px rgba(0,0,0,0.7);
+  font-size: clamp(12px, 2vw, 18px);
+  text-align:center;
+  pointer-events:none;
+  z-index:5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 15px; /* دفع المحتوى بعيدًا عن المركز */
+}
+.label-1 { transform: rotate(36deg); }   /* (72/2) */
+.label-2 { transform: rotate(108deg); }  /* 72 + 36 */
+.label-3 { transform: rotate(180deg); }  /* 144 + 36 */
+.label-4 { transform: rotate(252deg); }  /* 216 + 36 */
+.label-5 { transform: rotate(324deg); }  /* 288 + 36 */
+
+/* تدوير المحتوى الداخلي ليبقى مستقيماً */
+.label-1 > div { transform: rotate(-36deg); }
+.label-2 > div { transform: rotate(-108deg); }
+.label-3 > div { transform: rotate(-180deg); }
+.label-4 > div { transform: rotate(-252deg); }
+.label-5 > div { transform: rotate(-324deg); }
+
+
+/* أيقونات ونص داخل كل تسمية */
+.seg-icon{ font-size: clamp(20px, 3vw, 28px); }
+.seg-text{ font-size: clamp(12px, 2vw, 16px); margin-top: 8px; }
+
+/* السهم العلوي */
+.arrow{
+  position:absolute;
+  top: -20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:0; height:0;
+  border-left:18px solid transparent;
+  border-right:18px solid transparent;
+  border-top:36px solid #333;
+  z-index:10;
+}
+
+/* الأزرار */
+.spin-btn{
+  background: linear-gradient(45deg,#667eea,#764ba2);
+  color:white; border:none; padding:14px 30px; border-radius:30px;
+  font-size:clamp(16px, 2vw, 20px); cursor:pointer; margin-top:10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.spin-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+.spin-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+.export-btn{ background: linear-gradient(45deg,#27ae60,#229954); color:white; border:none; padding:12px 22px; border-radius:16px; cursor:pointer; font-size: 16px; }
+
+/* نتيجة الفوز */
+.result{
+  margin: 25px 0; /* زيادة الهامش */
+  padding:16px; border-radius:12px; font-size:clamp(18px,2.2vw,26px);
+  font-weight:bold; min-height:65px; display:flex; align-items:center; justify-content:center;
+}
+.result.win-50{ background: linear-gradient(45deg,#e74c3c,#c0392b); color:#fff; }
+.result.win-25{ background: linear-gradient(45deg,#3498db,#2980b9); color:#fff; }
+.result.win-sunshade{ background: linear-gradient(45deg,#27ae60,#229954); color:#fff; }
+.result.win-luck{ background: linear-gradient(45deg,#f1c40f,#f39c12); color:#111; }
+.result.win-water{ background: linear-gradient(45deg,#00bcd4,#0097a7); color:#fff; }
+
+/* ===== قسم الإحصائيات (معدّل) ===== */
+.stats {
+  margin: 25px 0; /* زيادة الهامش */
+  display: flex;
+  justify-content: center; /* توسيط العنصر الوحيد */
+  align-items: center;
+}
+.stat-item {
+  background: rgba(102, 126, 234, 0.1); /* لون خلفية أفتح */
+  color: #333; /* لون نص أغمق */
+  padding: 15px 30px;
+  border-radius:12px;
+  text-align:center;
+  border: 2px solid #667eea;
+  min-width: 220px;
+}
+.stat-number{
+  font-size:clamp(22px, 2.5vw, 32px);
+  font-weight:700;
+  display:block;
+  color: #667eea;
+}
+
+/* قائمة اللاعبين (مخفية) */
+.players-list{ display:none; max-height:200px; overflow-y:auto; border:1px solid #ddd; border-radius:10px; margin:15px 0; padding:10px; }
+.controls { margin-top: 25px; } /* هامش علوي لزر التصدير */
+
+/* رسائل الخطأ والنجاح */
+.error{ color:#d9534f; background: rgba(217, 83, 79, 0.1); border: 1px solid rgba(217, 83, 79, 0.2); padding: 10px; border-radius: 8px; font-weight:700; margin:8px 0; display:block; }
+.success{ color:#5cb85c; background: rgba(92, 184, 92, 0.1); border: 1px solid rgba(92, 184, 92, 0.2); padding: 10px; border-radius: 8px; font-weight:700; margin:8px 0; display:block; }
+
+/* confetti */
+@keyframes confetti { 0%{transform:translateY(0) rotate(0); opacity:1} 100%{transform:translateY(500px) rotate(360deg); opacity:0} }
+.confetti{ position:fixed; width:10px; height:10px; animation:confetti 2s ease-out forwards; z-index:1000; }
+
+/* تدرجات تفاعلية */
+.stat-item.highlight{ animation:pulse 1.5s infinite; box-shadow:0 0 15px rgba(102, 126, 234, 0.7); }
+@keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.05)} 100%{transform:scale(1)} }
