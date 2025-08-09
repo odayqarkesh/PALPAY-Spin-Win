@@ -1,89 +1,89 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎰 PALPAY - Spin and Win 🎰</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>🎰 PALPAY - Spin and Win 🎰</title>
 
-  <link rel="stylesheet" href="styles.css" />
-
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>🎯 PALPAY - Spin and Win 🎯</h1>
-
-    <div class="game-section">
-      <div class="input-group">
-        <label for="playerId">رقم الهوية (9 أرقام):</label>
-        <input type="text" id="playerId" placeholder="123456789" maxlength="9">
-      </div>
-
-      <div class="input-group">
-        <label for="playerPhone">رقم الهاتف (10 أرقام يبدأ بـ 05):</label>
-        <input type="text" id="playerPhone" placeholder="0501234567" maxlength="10">
-      </div>
-
-      <div id="errorMsg" class="error" style="display: none;"></div>
-      <div id="successMsg" class="success" style="display: none;"></div>
-
-      <button class="spin-btn" id="spinBtn">🎲 أدر العجلة</button>
+    <div class="side-content left-side">
+        <img src="images/We are PALPAY Logo.jpg" alt="We are PALPAY Logo" class="side-logo">
+        <img src="images/we are palpay-qr.png" alt="We are PALPAY QR Code" class="side-qr">
     </div>
 
-    <div class="wheel-container">
-      <div class="arrow"></div>
-      <div class="wheel" id="wheel">
-        <div class="segment-label label-1">
-          <div>
-            <div class="seg-icon">💰</div>
-            <div class="seg-text">50 شيكل</div>
-          </div>
+    <div class="container">
+        <h1>🎯 PALPAY - Spin and Win 🎯</h1>
+
+        <div class="game-section">
+            <div class="input-group">
+                <label for="playerId">رقم الهوية (9 أرقام):</label>
+                <input type="text" id="playerId" placeholder="123456789" maxlength="9">
+            </div>
+
+            <div class="input-group">
+                <label for="playerPhone">رقم الهاتف (10 أرقام يبدأ بـ 05):</label>
+                <input type="text" id="playerPhone" placeholder="0501234567" maxlength="10">
+            </div>
+
+            <div id="errorMsg" class="error" style="display: none;"></div>
+            <div id="successMsg" class="success" style="display: none;"></div>
+
+            <button class="spin-btn" id="spinBtn">🎲 أدر العجلة</button>
         </div>
-        <div class="segment-label label-2">
-          <div>
-            <div class="seg-icon">☂️</div>
-            <div class="seg-text">شماسي سيارة</div>
-          </div>
+
+        <div class="wheel-container">
+            <div class="arrow"></div>
+            <div class="wheel" id="wheel">
+                <div class="segment-label label-1">
+                    <div>
+                        <div class="seg-icon">💰</div>
+                        <div class="seg-text">50 شيكل</div>
+                    </div>
+                </div>
+                <div class="segment-label label-2">
+                    <div>
+                        <div class="seg-icon">☂️</div>
+                        <div class="seg-text">شماسي سيارة</div>
+                    </div>
+                </div>
+                <div class="segment-label label-3">
+                    <div>
+                        <div class="seg-icon">💵</div>
+                        <div class="seg-text">25 شيكل</div>
+                    </div>
+                </div>
+                <div class="segment-label label-4">
+                    <div>
+                        <div class="seg-icon">🍀</div>
+                        <div class="seg-text">حظ أوفر</div>
+                    </div>
+                </div>
+                <div class="segment-label label-5">
+                    <div>
+                        <div class="seg-icon">🚰</div>
+                        <div class="seg-text">مطرّة مي</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="segment-label label-3">
-          <div>
-            <div class="seg-icon">💵</div>
-            <div class="seg-text">25 شيكل</div>
-          </div>
+
+        <div id="result" class="result" style="display: none;"></div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div>إجمالي اللاعبين</div>
+                <span class="stat-number" id="totalPlayers">0</span>
+            </div>
         </div>
-        <div class="segment-label label-4">
-          <div>
-            <div class="seg-icon">🍀</div>
-            <div class="seg-text">حظ أوفر</div>
-          </div>
-        </div>
-        <div class="segment-label label-5">
-          <div>
-            <div class="seg-icon">🚰</div>
-            <div class="seg-text">مطرّة مي</div>
-          </div>
-        </div>
-      </div>
+    </div>
+    
+    <div class="side-content right-side">
+        <img src="images/PALPAY Logo.jpg" alt="PALPAY Logo" class="side-logo">
+        <img src="images/PALPAY-QR.png" alt="PALPAY QR Code" class="side-qr">
     </div>
 
-    <div id="result" class="result" style="display: none;"></div>
-
-    <div class="stats">
-      <div class="stat-item">
-        <div>إجمالي اللاعبين</div>
-        <span class="stat-number" id="totalPlayers">0</span>
-      </div>
-    </div>
-
-    <div class="controls">
-      <button class="export-btn" id="exportBtn">📊 تصدير إلى Excel</button>
-    </div>
-
-    <div class="players-list" id="playersList">
-      <h3>قائمة اللاعبين:</h3>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
