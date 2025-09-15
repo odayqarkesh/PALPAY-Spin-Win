@@ -48,9 +48,9 @@ body{
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(45deg, 
-        transparent 20%, 
-        rgba(255, 255, 255, 0.1) 50%, 
+    background: linear-gradient(45deg,  
+        transparent 20%,  
+        rgba(255, 255, 255, 0.1) 50%,  
         transparent 80%);
     animation: shimmer 4s ease-in-out infinite;
     pointer-events: none;
@@ -312,7 +312,7 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
 .result.win-50{ background: linear-gradient(45deg,#e74c3c,#c0392b); color:#fff; }
 .result.win-25{ background: linear-gradient(45deg,#3498db,#2980b9); color:#fff; }
 .result.win-sunshade{ background: linear-gradient(45deg,#27ae60,#229954); color:#fff; }
-.result.win-luck{ background: linear-gradient(45deg,#f1c40f,#f39c12); color:#111; }
+.result.win-cup{ background: linear-gradient(45deg,#f1c40f,#f39c12); color:#111; }
 .result.win-water{ background: linear-gradient(45deg,#00bcd4,#0097a7); color:#fff; }
 
 /* قسم الإحصائيات */
