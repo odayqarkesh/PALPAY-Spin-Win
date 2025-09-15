@@ -17,7 +17,7 @@ const segments = [
     { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36 },
     { name: 'شماسي سيارة', icon: '☂️', class: 'win-sunshade', startAngle: 72, endAngle: 144, stopAngle: 108 },
     { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180 },
-    { name: 'Cup', icon: '🏆', class: 'win-cup', startAngle: 216, endAngle: 288, stopAngle: 252 },
+    { name: 'Cup', icon: '🏆', class: 'win-cup', startAngle: 216, endAngle: 288, stopAngle: 252 }, // تم التعديل هنا لـ 'Cup'
     { name: 'مطره مي', icon: '🚰', class: 'win-water', startAngle: 288, endAngle: 360, stopAngle: 324 }
 ];
 
@@ -82,11 +82,15 @@ function startSpin() {
 
     // فلترة القطاعات القابلة للربح فقط
     const winnableSegments = segments.filter(segment => {
-        if (segment.name === '50 شيكل') return false; // جائزة 50 شيكل غير متاحة للربح
+        // إذا كان اسم القطاع هو '50 شيكل'، لا يمكن ربحه حالياً (حسب اللوجيك السابق الذي وضعته أنت)
+        if (segment.name === '50 شيكل') return false;
+        
+        // التحقق من توافر الجوائز المحدودة
         if (segment.name === '25 شيكل' && gameData.prizes.prize25 <= 0) return false;
-        if (segment.name === 'Cup' && gameData.prizes.cup <= 0) return false;
+        if (segment.name === 'Cup' && gameData.prizes.cup <= 0) return false; // تم التعديل هنا لـ 'Cup'
         if (segment.name === 'مطره مي' && gameData.prizes.waterBottle <= 0) return false;
         if (segment.name === 'شماسي سيارة' && gameData.prizes.sunShade <= 0) return false;
+        
         return true;
     });
 
@@ -127,7 +131,7 @@ function startSpin() {
                 gameData.prizes.prize25--;
                 createConfetti();
                 break;
-            case 'Cup':
+            case 'Cup': // تم التعديل هنا لـ 'Cup'
                 gameData.prizes.cup--;
                 createConfetti();
                 break;
@@ -137,6 +141,7 @@ function startSpin() {
             case 'شماسي سيارة':
                 gameData.prizes.sunShade--;
                 break;
+            // لا يوجد حالة لـ 'حظ أوفر' هنا بعد الآن
         }
 
         updateStats();
