@@ -2,10 +2,10 @@
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize25: 12,      // 12 فائزين * 25 شيكل = 300 شيكل
-        cup: 20,          // 20 كوب كحد أقصى
-        waterBottle: 20,  // 20 مطرة كحد أقصى
-        sunShade: 30      // 30 شمسية سيارة كحد أقصى
+        prize25: 4,      // 12 فائزين * 25 شيكل = 300 شيكل
+        cup: 25,          // 20 كوب كحد أقصى
+        waterBottle: 25,  // 20 مطرة كحد أقصى
+        sunShade: 35      // 30 شمسية سيارة كحد أقصى
     }
 };
 
@@ -202,3 +202,4 @@ function getGregorianNow() {
     const ss = String(d.getSeconds()).padStart(2, '0');
     return `${YYYY}-${MM}-${DD} ${hh}:${mm}:${ss}`;
 }
+
