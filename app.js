@@ -191,7 +191,6 @@ function sendToGoogleSheets(id, phone, prize, timestamp) {
     });
 }
 
-// دالة مساعدة للحصول على الوقت الحالي
 function getGregorianNow() {
     const d = new Date();
     const YYYY = d.getFullYear();
@@ -202,7 +201,6 @@ function getGregorianNow() {
     const ss = String(d.getSeconds()).padStart(2, '0');
     return `${YYYY}-${MM}-${DD} ${hh}:${mm}:${ss}`;
 }
-
 
 
 
