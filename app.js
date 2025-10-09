@@ -2,10 +2,10 @@
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize25: 20,      // 16 فائزين * 25 شيكل = 400 شيكل
+        prize25: 10,      // 16 فائزين * 25 شيكل = 400 شيكل
         cup: 35,          // 20 كوب كحد أقصى
-        waterBottle: 15,  // 20 مطرة كحد أقصى
-      //  sunShade: 35      // 30 شمسية سيارة كحد أقصى
+        Prize50: 2,  // 20 مطرة كحد أقصى
+        sunShade: 10      // 30 شمسية سيارة كحد أقصى
     }
 };
 
@@ -18,7 +18,7 @@ const segments = [
     { name: '100 شيكل', icon: '💰', class: 'win-sunshade', startAngle: 72, endAngle: 144, stopAngle: 108 },
     { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180 },
     { name: 'Cup', icon: '🏆', class: 'win-cup', startAngle: 216, endAngle: 288, stopAngle: 252 }, 
-    { name: 'مطره مي', icon: '🚰', class: 'win-water', startAngle: 288, endAngle: 360, stopAngle: 324 }
+    { name: 'شمسية سيارة', icon: '🚰', class: 'win-water', startAngle: 288, endAngle: 360, stopAngle: 324 }
 ];
 
 // ===== عناصر DOM =====
@@ -83,13 +83,14 @@ function startSpin() {
     // فلترة القطاعات القابلة للربح فقط
     const winnableSegments = segments.filter(segment => {
         // إذا كان اسم القطاع هو '50 شيكل'، لا يمكن ربحه حالياً 
-        if (segment.name === '50 شيكل') return false;
+      //  if (segment.name === '50 شيكل') return false;
         if (segment.name === '100 شيكل') return false;
         // التحقق من توافر الجوائز المحدودة
         if (segment.name === '25 شيكل' && gameData.prizes.prize25 <= 0) return false;
+        if (segment.name === '50 شيكل' && gameData.prizes.prize50 <= 0) return false;
         if (segment.name === 'Cup' && gameData.prizes.cup <= 0) return false; 
-        if (segment.name === 'مطره مي' && gameData.prizes.waterBottle <= 0) return false;
-      //  if (segment.name === 'شماسي سيارة' && gameData.prizes.sunShade <= 0) return false;
+        //if (segment.name === 'مطره مي' && gameData.prizes.waterBottle <= 0) return false;
+        if (segment.name === 'شماسي سيارة' && gameData.prizes.sunShade <= 0) return false;
         
         return true;
     });
@@ -135,10 +136,10 @@ function startSpin() {
                 gameData.prizes.cup--;
                 createConfetti();
                 break;
-            case 'مطره مي':
-                gameData.prizes.waterBottle--;
+            case 'شمسية سيارة':
+                gameData.prizes.sunShade--;
                 break;
-        /*    case 'شماسي سيارة':
+            case '50 شيكل':
                 gameData.prizes.sunShade--;
                 break;*/
             // لا يوجد حالة لـ 'حظ أوفر' هنا بعد الآن
@@ -201,6 +202,7 @@ function getGregorianNow() {
     const ss = String(d.getSeconds()).padStart(2, '0');
     return `${YYYY}-${MM}-${DD} ${hh}:${mm}:${ss}`;
 }
+
 
 
 
