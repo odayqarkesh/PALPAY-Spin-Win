@@ -2,23 +2,26 @@
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize25: 10,      // 10 فائزين * 25 شيكل = 250 شيكل
-        prize50: 2,       // 2 فائزين * 50 شيكل = 100 شيكل
-        cup: 50,          // 50 كأس كحد أقصى
-        sunShade: 10      // 10 شمسية سيارة كحد أقصى
+        prize25: 32,      // 32 جائزة بقيمة 25 شيكل
+        mug: 40,          // 40 كأس (MUG)
+        // الجوائز التالية تم إيقافها (منظر فقط)
+        prize50: 0,        // تم إيقاف 50 شيكل
+        prize100: 0,       // تم إيقاف 100 شيكل
+        sunShade: 0       // تم إيقاف شمسية سيارة
     }
 };
 
-// ===== رابط Google Apps Script URL الذي أنشأته =====
+// ===== رابط Google Apps Script URL الذي أنشأته (لم يتغير) =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxZ7NtD5UqDnwiQzbqUNP4zpbWzA6NIGyBgzGiDGX_UK2xlZoHWNyKSaR6j_XFl0g/exec';
 
-// ===== تعريف القطاعات (مع تعديل جائزة الكوب والشمسية) =====
+// ===== تعريف القطاعات (محدّثة بـ MUG وإيقاف الجوائز) =====
+// ملاحظة: الألوان والترتيب في العجلة لا تزال كما هي لـ 5 قطاعات
 const segments = [
-    { name: '50 شيكل', icon: '💵', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36 },
-    { name: '100 شيكل', icon: '💰', class: 'win-sunshade', startAngle: 72, endAngle: 144, stopAngle: 108 }, // مجرد منظر
-    { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180 },
-    { name: 'Cup', icon: '🏆', class: 'win-cup', startAngle: 216, endAngle: 288, stopAngle: 252 }, 
-    { name: 'شمسية سيارة', icon: '🚗', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324 }
+    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: false },   // منظر - تم إيقافها
+    { name: '100 شيكل', icon: '💵', class: 'win-100', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: false }, // منظر - تم إيقافها
+    { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true },   // قابلة للربح
+    { name: 'MUG', icon: '☕', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: true },       // قابلة للربح
+    { name: 'شمسية سيارة', icon: '🚗', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: false } // منظر - تم إيقافها
 ];
 
 // ===== عناصر DOM =====
@@ -32,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateStats();
 });
 
-// ===== دوال التحقق والرسائل =====
+// ===== دوال التحقق والرسائل (بدون تغيير) =====
 function validateInput() {
     const id = document.getElementById('playerId').value.trim();
     const phone = document.getElementById('playerPhone').value.trim();
@@ -59,7 +62,7 @@ function showSuccess(message) {
     successDiv.style.display = 'block';
 }
 
-// ===== مؤثر confetti =====
+// ===== مؤثر confetti (بدون تغيير) =====
 function createConfetti() {
     const colors = ['#27ae60','#3498db','#f1c40f','#e74c3c'];
     for (let i=0; i<80; i++){
@@ -80,16 +83,13 @@ function startSpin() {
     spinBtn.disabled = true;
     resultDiv.style.display = 'none';
 
-    // فلترة القطاعات القابلة للربح فقط
+    // فلترة القطاعات القابلة للربح فقط (winnable: true)
     const winnableSegments = segments.filter(segment => {
-        // جائزة 100 شيكل فقط منظر (لن يتم فوزها)
-        if (segment.name === '100 شيكل') return false;
-        
+        if (!segment.winnable) return false; // إيقاف 50، 100، شمسية سيارة
+
         // التحقق من توافر الجوائز المحدودة
         if (segment.name === '25 شيكل' && gameData.prizes.prize25 <= 0) return false;
-        if (segment.name === '50 شيكل' && gameData.prizes.prize50 <= 0) return false;
-        if (segment.name === 'Cup' && gameData.prizes.cup <= 0) return false; 
-        if (segment.name === 'شمسية سيارة' && gameData.prizes.sunShade <= 0) return false;
+        if (segment.name === 'MUG' && gameData.prizes.mug <= 0) return false;
         
         return true;
     });
@@ -100,6 +100,7 @@ function startSpin() {
         return;
     }
 
+    // اختيار جائزة عشوائية من القائمة المتاحة فقط
     const selectedSegment = winnableSegments[Math.floor(Math.random() * winnableSegments.length)];
 
     const baseRotations = 5 * 360;
@@ -131,17 +132,11 @@ function startSpin() {
                 gameData.prizes.prize25--;
                 createConfetti();
                 break;
-            case '50 شيكل':
-                gameData.prizes.prize50--;
+            case 'MUG':
+                gameData.prizes.mug--;
                 createConfetti();
                 break;
-            case 'Cup':
-                gameData.prizes.cup--;
-                createConfetti();
-                break;
-            case 'شمسية سيارة':
-                gameData.prizes.sunShade--;
-                break;
+            // لا حاجة لحالات 50، 100، أو شمسية لأنها لن تُربح
         }
 
         updateStats();
@@ -171,7 +166,7 @@ function updateStats() {
     }
 }
 
-// ===== دالة لإرسال البيانات إلى Google Sheets (مُحسّنة) =====
+// ===== دالة لإرسال البيانات إلى Google Sheets (بدون تغيير) =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
     
