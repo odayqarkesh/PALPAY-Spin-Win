@@ -1,27 +1,26 @@
-// ===== بيانات اللعبة (معدّلة حسب القواعد الجديدة) =====
+// ===== بيانات اللعبة (معدّلة: فقط 40 جائزة بقيمة 25 شيكل) =====
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize25: 32,      // 32 جائزة بقيمة 25 شيكل
-        mug: 40,          // 40 كأس (MUG)
-        // الجوائز التالية تم إيقافها (منظر فقط)
-        prize50: 0,        // تم إيقاف 50 شيكل
-        prize100: 0,       // تم إيقاف 100 شيكل
-        sunShade: 0       // تم إيقاف شمسية سيارة
+        prize25: 40,      // التعديل: 40 جائزة بقيمة 25 شيكل
+        mug: 0,           // التعديل: تم إيقاف الكؤوس (0)
+        prize50: 0,       // 0
+        prize100: 0,      // 0
+        sunShade: 0       // 0
     }
 };
 
-// ===== رابط Google Apps Script URL الذي أنشأته (لم يتغير) =====
+// ===== رابط Google Apps Script URL (لم يتغير) =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxZ7NtD5UqDnwiQzbqUNP4zpbWzA6NIGyBgzGiDGX_UK2xlZoHWNyKSaR6j_XFl0g/exec';
 
-// ===== تعريف القطاعات (محدّثة بـ MUG وإيقاف الجوائز) =====
-// ملاحظة: الألوان والترتيب في العجلة لا تزال كما هي لـ 5 قطاعات
+// ===== تعريف القطاعات =====
+// التعديل: جعلنا winnable: false للجميع ما عدا الـ 25 شيكل
 const segments = [
-    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: false },   // منظر - تم إيقافها
-    { name: '100 شيكل', icon: '💵', class: 'win-100', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: false }, // منظر - تم إيقافها
-    { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true },   // قابلة للربح
-    { name: 'MUG', icon: '☕', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: true },       // قابلة للربح
-    { name: 'شمسية سيارة', icon: '🚗', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: false } // منظر - تم إيقافها
+    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: false },      // منظر
+    { name: '100 شيكل', icon: '💵', class: 'win-100', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: false }, // منظر
+    { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true },   // الوحيدة القابلة للربح
+    { name: 'MUG', icon: '☕', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: false },      // منظر (تم الإيقاف)
+    { name: 'شمسية سيارة', icon: '🚗', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: false } // منظر
 ];
 
 // ===== عناصر DOM =====
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateStats();
 });
 
-// ===== دوال التحقق والرسائل (بدون تغيير) =====
+// ===== دوال التحقق والرسائل =====
 function validateInput() {
     const id = document.getElementById('playerId').value.trim();
     const phone = document.getElementById('playerPhone').value.trim();
@@ -62,7 +61,7 @@ function showSuccess(message) {
     successDiv.style.display = 'block';
 }
 
-// ===== مؤثر confetti (بدون تغيير) =====
+// ===== مؤثر confetti =====
 function createConfetti() {
     const colors = ['#27ae60','#3498db','#f1c40f','#e74c3c'];
     for (let i=0; i<80; i++){
@@ -76,20 +75,20 @@ function createConfetti() {
     }
 }
 
-// ===== وظيفة بدء الدوران (اللوجيك الجديد لاختيار الجوائز المتاحة) =====
+// ===== وظيفة بدء الدوران =====
 function startSpin() {
     if (!validateInput()) return;
 
     spinBtn.disabled = true;
     resultDiv.style.display = 'none';
 
-    // فلترة القطاعات القابلة للربح فقط (winnable: true)
+    // فلترة القطاعات القابلة للربح فقط
+    // بما أننا وضعنا winnable: true فقط للـ 25 شيكل، القائمة ستحتوي عليها فقط
     const winnableSegments = segments.filter(segment => {
-        if (!segment.winnable) return false; // إيقاف 50، 100، شمسية سيارة
+        if (!segment.winnable) return false; 
 
-        // التحقق من توافر الجوائز المحدودة
+        // التحقق من العدد المتبقي
         if (segment.name === '25 شيكل' && gameData.prizes.prize25 <= 0) return false;
-        if (segment.name === 'MUG' && gameData.prizes.mug <= 0) return false;
         
         return true;
     });
@@ -100,19 +99,24 @@ function startSpin() {
         return;
     }
 
-    // اختيار جائزة عشوائية من القائمة المتاحة فقط
+    // بما أن القائمة تحتوي فقط على خيار واحد، سيتم اختياره دائماً
     const selectedSegment = winnableSegments[Math.floor(Math.random() * winnableSegments.length)];
 
+    // حساب زاوية الدوران لتقف عند القطاع المختار
     const baseRotations = 5 * 360;
     const stopAngle = 360 - selectedSegment.stopAngle;
     const totalRotation = baseRotations + stopAngle;
+
+    // إضافة تغيير طفيف عشوائي (+/- 10 درجات) لجعل الوقوف يبدو واقعياً داخل القطاع
+    const randomOffset = Math.floor(Math.random() * 20) - 10; 
+    const finalRotation = totalRotation + randomOffset;
 
     wheel.style.transition = 'none';
     wheel.style.transform = `rotate(5deg)`;
 
     setTimeout(() => {
         wheel.style.transition = 'transform 4s cubic-bezier(0.17,0.89,0.32,0.98)';
-        wheel.style.transform = `rotate(${totalRotation}deg)`;
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
     }, 50);
 
     setTimeout(() => {
@@ -126,17 +130,10 @@ function startSpin() {
         gameData.playedIds.add(id);
         sendToGoogleSheets(id, phone, prize, timestamp);
         
-        // تحديث عدد الجوائز المتبقية
-        switch(prize) {
-            case '25 شيكل':
-                gameData.prizes.prize25--;
-                createConfetti();
-                break;
-            case 'MUG':
-                gameData.prizes.mug--;
-                createConfetti();
-                break;
-            // لا حاجة لحالات 50، 100، أو شمسية لأنها لن تُربح
+        // خصم الجائزة
+        if(prize === '25 شيكل') {
+            gameData.prizes.prize25--;
+            createConfetti();
         }
 
         updateStats();
@@ -155,7 +152,7 @@ function showResult(result) {
     resultDiv.style.display = 'flex';
 }
 
-// ===== تحديث الإحصائيات (مبسطة) =====
+// ===== تحديث الإحصائيات =====
 function updateStats() {
     document.getElementById('totalPlayers').textContent = gameData.playedIds.size;
     
@@ -166,7 +163,7 @@ function updateStats() {
     }
 }
 
-// ===== دالة لإرسال البيانات إلى Google Sheets (بدون تغيير) =====
+// ===== دالة الإرسال (بدون تغيير) =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
     
