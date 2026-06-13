@@ -1,24 +1,24 @@
-
+// ===== بيانات اللعبة (معدّلة: 3 جوائز فقط بالعدد المطلوب) =====
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize50: 2,          
-        bottle: 15,        
-        packagePalPay: 10   
+        prize50: 2,         // قسم 50 شيكل - شخصين فقط لا غير
+        bottle: 15,         // قسم مطرة - 15 مطرة
+        packagePalPay: 10   // قسم بكج بال باي - 10 بكجات
     }
 };
 
-
+// ===== رابط Google Apps Script URL الخاص بك =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxK1nn3DZ3dV2kRgnPC2tuObDk-4vF0Wnhw_LcMkQU3U2cjoRdLFge38rlgCjZFhXmg/exec';
 
-
+// ===== تعريف القطاعات (تم التعديل إلى 3 أقسام متساوية - زاوية 120 درجة لكل قسم) =====
 const segments = [
     { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 120, stopAngle: 60, winnable: true, prizeKey: 'prize50' },
     { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 120, endAngle: 240, stopAngle: 180, winnable: true, prizeKey: 'bottle' },
     { name: 'بكج بال باي', icon: '🎁', class: 'win-25', startAngle: 240, endAngle: 360, stopAngle: 300, winnable: true, prizeKey: 'packagePalPay' }
 ];
 
-// =====  DOM =====
+// ===== عناصر DOM =====
 const wheel = document.getElementById('wheel');
 const spinBtn = document.getElementById('spinBtn');
 const resultDiv = document.getElementById('result');
@@ -157,28 +157,22 @@ function updateStats() {
 // ===== دالة الإرسال المتوافقة مع السيرفر وتمنع الـ CORS =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
-    
-    const formBody = [];
-    for (const property in data) {
-        const encodedKey = encodeURIComponent(property);
-        const encodedValue = encodeURIComponent(data[property]);
-        formBody.push(encodedKey + "=" + encodedValue);
-    }
-    const finalBody = formBody.join("&");
 
     fetch(googleAppsScriptURL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: finalBody
+        mode: 'no-cors', 
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
     })
     .then(() => {
-        console.log('Data sent to Google Sheets successfully.');
-        showSuccess('تم تسجيل فوزك بنجاح!');
+        console.log('تم إرسال البيانات بنجاح.');
+        showSuccess('تم تسجيل فوزك في السيرفر بنجاح!');
     })
     .catch(error => {
-        console.error('Error sending data to Google Sheets:', error);
-        showError('حدث خطأ أثناء تسجيل البيانات، يرجى المحاولة مرة أخرى.');
+        console.error('خطأ أثناء الإرسال:', error);
+        showError('حدث خطأ بالاتصال، لكن تم حفظ اللعبة محلياً.');
     });
 }
 
