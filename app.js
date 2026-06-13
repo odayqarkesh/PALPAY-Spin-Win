@@ -9,7 +9,7 @@ let gameData = {
 };
 
 
-const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxeZwFHfDTLk8cZ96cufr_zHlf2oV-lXVV0A8TQapWvn8_Qaf3t5WN6qjRjCQ7f90ea/exec';
+const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxK1nn3DZ3dV2kRgnPC2tuObDk-4vF0Wnhw_LcMkQU3U2cjoRdLFge38rlgCjZFhXmg/exec';
 
 
 const segments = [
