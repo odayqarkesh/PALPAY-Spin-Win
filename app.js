@@ -1,26 +1,23 @@
-// ===== بيانات اللعبة (معدّلة: فقط 40 جائزة بقيمة 25 شيكل) =====
+// ===== بيانات اللعبة (معدّلة بناءً على الجوائز الجديدة والحد الأقصى) =====
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize25: 40,      // التعديل: 40 جائزة بقيمة 25 شيكل
-        mug: 0,           // التعديل: تم إيقاف الكؤوس (0)
-        prize50: 0,       // 0
-        prize100: 0,      // 0
-        sunShade: 0       // 0
+        prize50: 2,         // قسم 50 شيكل - شخصين فقط لا غير
+        bottle: 15,         // قسم مطرة - 15 مطرة
+        packagePalPay: 10   // قسم بكج بال باي - 10 بكجات
     }
 };
 
-// ===== رابط Google Apps Script URL (لم يتغير) =====
+// ===== رابط Google Apps Script URL =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxZ7NtD5UqDnwiQzbqUNP4zpbWzA6NIGyBgzGiDGX_UK2xlZoHWNyKSaR6j_XFl0g/exec';
 
-// ===== تعريف القطاعات =====
-// التعديل: جعلنا winnable: false للجميع ما عدا الـ 25 شيكل
+// ===== تعريف القطاعات القابلة للربح بناءً على الميزانية المتوفرة =====
 const segments = [
-    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: false },      // منظر
-    { name: '100 شيكل', icon: '💵', class: 'win-100', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: false }, // منظر
-    { name: '25 شيكل', icon: '💵', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true },   // الوحيدة القابلة للربح
-    { name: 'MUG', icon: '☕', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: false },      // منظر (تم الإيقاف)
-    { name: 'شمسية سيارة', icon: '🚗', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: false } // منظر
+    { name: '50', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: true, prizeKey: 'prize50' },
+    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: true, prizeKey: 'bottle' },
+    { name: 'بكج بال باي', icon: '🎁', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true, prizeKey: 'packagePalPay' },
+    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: true, prizeKey: 'bottle' },
+    { name: 'بكج بال باي', icon: '🎁', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: true, prizeKey: 'packagePalPay' }
 ];
 
 // ===== عناصر DOM =====
@@ -82,24 +79,20 @@ function startSpin() {
     spinBtn.disabled = true;
     resultDiv.style.display = 'none';
 
-    // فلترة القطاعات القابلة للربح فقط
-    // بما أننا وضعنا winnable: true فقط للـ 25 شيكل، القائمة ستحتوي عليها فقط
+    // فلترة القطاعات التي ما زال يوجد بها مخزون من الجوائز
     const winnableSegments = segments.filter(segment => {
         if (!segment.winnable) return false; 
-
-        // التحقق من العدد المتبقي
-        if (segment.name === '25 شيكل' && gameData.prizes.prize25 <= 0) return false;
-        
+        if (gameData.prizes[segment.prizeKey] <= 0) return false;
         return true;
     });
 
     if (winnableSegments.length === 0) {
-        showError('عذراً، لقد نفدت جميع الجوائز!');
+        showError('عذراً، لقد نفدت جميع الجوائز للأسف!');
         spinBtn.disabled = false;
         return;
     }
 
-    // بما أن القائمة تحتوي فقط على خيار واحد، سيتم اختياره دائماً
+    // اختيار قطاع عشوائي من القطاعات المتاحة فقط
     const selectedSegment = winnableSegments[Math.floor(Math.random() * winnableSegments.length)];
 
     // حساب زاوية الدوران لتقف عند القطاع المختار
@@ -107,7 +100,7 @@ function startSpin() {
     const stopAngle = 360 - selectedSegment.stopAngle;
     const totalRotation = baseRotations + stopAngle;
 
-    // إضافة تغيير طفيف عشوائي (+/- 10 درجات) لجعل الوقوف يبدو واقعياً داخل القطاع
+    // إضافة تغيير طفيف عشوائي داخل القطاع ليظهر الدوران بشكل طبيعي
     const randomOffset = Math.floor(Math.random() * 20) - 10; 
     const finalRotation = totalRotation + randomOffset;
 
@@ -128,13 +121,13 @@ function startSpin() {
         const timestamp = getGregorianNow();
 
         gameData.playedIds.add(id);
-        sendToGoogleSheets(id, phone, prize, timestamp);
         
-        // خصم الجائزة
-        if(prize === '25 شيكل') {
-            gameData.prizes.prize25--;
-            createConfetti();
-        }
+        // خصم الجائزة من المخزون وتفعيل الـ Confetti للمبروك
+        gameData.prizes[selectedSegment.prizeKey]--;
+        createConfetti();
+
+        // إرسال البيانات إلى Google Sheets
+        sendToGoogleSheets(id, phone, prize, timestamp);
 
         updateStats();
 
@@ -163,23 +156,34 @@ function updateStats() {
     }
 }
 
-// ===== دالة الإرسال (بدون تغيير) =====
+// ===== دالة الإرسال المعدلة لتعمل بشكل صحيح لتجاوز مشكلة الـ CORS وحفظ البيانات تلقائياً =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
     
+    // تم تحويل الطريقة إلى استخدام URLSearchParams لضمان قراءة الـ Script للبيانات بدون مشاكل CORS
+    const formBody = [];
+    for (const property in data) {
+        const encodedKey = encodeURIComponent(property);
+        const encodedValue = encodeURIComponent(data[property]);
+        formBody.push(encodedKey + "=" + encodedValue);
+    }
+    const finalBody = formBody.join("&");
+
     fetch(googleAppsScriptURL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        mode: 'no-cors', // الإبقاء عليها كما هي لتجنب مشاكل المتصفح الأمنية
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' 
+        },
+        body: finalBody
     })
     .then(() => {
         console.log('Data sent to Google Sheets successfully.');
-        showSuccess('تم تسجيل فوزك بنجاح!');
+        showSuccess('تم تسجيل فوزك بنجاح في السجلات!');
     })
     .catch(error => {
         console.error('Error sending data to Google Sheets:', error);
-        showError('حدث خطأ أثناء تسجيل البيانات، يرجى المحاولة مرة أخرى.');
+        showError('حدث خطأ أثناء تسجيل البيانات في السيرفر، يرجى إبلاغ المشرف.');
     });
 }
 
