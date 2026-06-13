@@ -9,7 +9,7 @@ let gameData = {
 };
 
 // ===== رابط Google Apps Script URL =====
-const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxZ7NtD5UqDnwiQzbqUNP4zpbWzA6NIGyBgzGiDGX_UK2xlZoHWNyKSaR6j_XFl0g/exec';
+const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxeZwFHfDTLk8cZ96cufr_zHlf2oV-lXVV0A8TQapWvn8_Qaf3t5WN6qjRjCQ7f90ea/exec';
 
 // ===== تعريف القطاعات القابلة للربح بناءً على الميزانية المتوفرة =====
 const segments = [
