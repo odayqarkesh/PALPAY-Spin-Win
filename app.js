@@ -9,7 +9,7 @@ let gameData = {
 };
 
 // ===== رابط Google Apps Script URL الخاص بك =====
-const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbwBegqXy5_njKWKfZqv9Rxo0MAD6i-OWnfagFfDSz7Q5X6JIu-IgO7I1sH1vmajx8gh/exec';
+const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxeZwFHfDTLk8cZ96cufr_zHlf2oV-lXVV0A8TQapWvn8_Qaf3t5WN6qjRjCQ7f90ea/exec';
 
 // ===== تعريف القطاعات (تم التعديل إلى 3 أقسام متساوية - زاوية 120 درجة لكل قسم) =====
 const segments = [
