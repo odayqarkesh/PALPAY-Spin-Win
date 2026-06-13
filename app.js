@@ -1,26 +1,24 @@
-// ===== بيانات اللعبة (معدّلة بناءً على الجوائز الجديدة والحد الأقصى) =====
+
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize50: 2,         // قسم 50 شيكل - شخصين فقط لا غير
-        bottle: 15,         // قسم مطرة - 15 مطرة
-        packagePalPay: 10   // قسم بكج بال باي - 10 بكجات
+        prize50: 2,          
+        bottle: 15,        
+        packagePalPay: 10   
     }
 };
 
-// ===== رابط Google Apps Script URL =====
+
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbxeZwFHfDTLk8cZ96cufr_zHlf2oV-lXVV0A8TQapWvn8_Qaf3t5WN6qjRjCQ7f90ea/exec';
 
-// ===== تعريف القطاعات القابلة للربح بناءً على الميزانية المتوفرة =====
+
 const segments = [
-    { name: '50', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: true, prizeKey: 'prize50' },
-    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: true, prizeKey: 'bottle' },
-    { name: 'بكج بال باي', icon: '🎁', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true, prizeKey: 'packagePalPay' },
-    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: true, prizeKey: 'bottle' },
-    { name: 'بكج بال باي', icon: '🎁', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: true, prizeKey: 'packagePalPay' }
+    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 120, stopAngle: 60, winnable: true, prizeKey: 'prize50' },
+    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 120, endAngle: 240, stopAngle: 180, winnable: true, prizeKey: 'bottle' },
+    { name: 'بكج بال باي', icon: '🎁', class: 'win-25', startAngle: 240, endAngle: 360, stopAngle: 300, winnable: true, prizeKey: 'packagePalPay' }
 ];
 
-// ===== عناصر DOM =====
+// =====  DOM =====
 const wheel = document.getElementById('wheel');
 const spinBtn = document.getElementById('spinBtn');
 const resultDiv = document.getElementById('result');
@@ -79,7 +77,7 @@ function startSpin() {
     spinBtn.disabled = true;
     resultDiv.style.display = 'none';
 
-    // فلترة القطاعات التي ما زال يوجد بها مخزون من الجوائز
+    // فلترة القطاعات المتاحة بناءً على المخزون المتبقي
     const winnableSegments = segments.filter(segment => {
         if (!segment.winnable) return false; 
         if (gameData.prizes[segment.prizeKey] <= 0) return false;
@@ -87,12 +85,12 @@ function startSpin() {
     });
 
     if (winnableSegments.length === 0) {
-        showError('عذراً، لقد نفدت جميع الجوائز للأسف!');
+        showError('عذراً، لقد نفدت جميع الجوائز!');
         spinBtn.disabled = false;
         return;
     }
 
-    // اختيار قطاع عشوائي من القطاعات المتاحة فقط
+    // اختيار قطاع عشوائي من الجوائز المتبقية
     const selectedSegment = winnableSegments[Math.floor(Math.random() * winnableSegments.length)];
 
     // حساب زاوية الدوران لتقف عند القطاع المختار
@@ -100,8 +98,8 @@ function startSpin() {
     const stopAngle = 360 - selectedSegment.stopAngle;
     const totalRotation = baseRotations + stopAngle;
 
-    // إضافة تغيير طفيف عشوائي داخل القطاع ليظهر الدوران بشكل طبيعي
-    const randomOffset = Math.floor(Math.random() * 20) - 10; 
+    // إضافة تغيير طفيف عشوائي لتبدو الوقفة طبيعية داخل القطاع العريض (120 درجة)
+    const randomOffset = Math.floor(Math.random() * 40) - 20; 
     const finalRotation = totalRotation + randomOffset;
 
     wheel.style.transition = 'none';
@@ -122,7 +120,7 @@ function startSpin() {
 
         gameData.playedIds.add(id);
         
-        // خصم الجائزة من المخزون وتفعيل الـ Confetti للمبروك
+        // خصم الجائزة وتشغيل الحفلة
         gameData.prizes[selectedSegment.prizeKey]--;
         createConfetti();
 
@@ -156,11 +154,10 @@ function updateStats() {
     }
 }
 
-// ===== دالة الإرسال المعدلة لتعمل بشكل صحيح لتجاوز مشكلة الـ CORS وحفظ البيانات تلقائياً =====
+// ===== دالة الإرسال المتوافقة مع السيرفر وتمنع الـ CORS =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
     
-    // تم تحويل الطريقة إلى استخدام URLSearchParams لضمان قراءة الـ Script للبيانات بدون مشاكل CORS
     const formBody = [];
     for (const property in data) {
         const encodedKey = encodeURIComponent(property);
@@ -171,19 +168,17 @@ function sendToGoogleSheets(id, phone, prize, timestamp) {
 
     fetch(googleAppsScriptURL, {
         method: 'POST',
-        mode: 'no-cors', // الإبقاء عليها كما هي لتجنب مشاكل المتصفح الأمنية
-        headers: { 
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' 
-        },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
         body: finalBody
     })
     .then(() => {
         console.log('Data sent to Google Sheets successfully.');
-        showSuccess('تم تسجيل فوزك بنجاح في السجلات!');
+        showSuccess('تم تسجيل فوزك بنجاح!');
     })
     .catch(error => {
         console.error('Error sending data to Google Sheets:', error);
-        showError('حدث خطأ أثناء تسجيل البيانات في السيرفر، يرجى إبلاغ المشرف.');
+        showError('حدث خطأ أثناء تسجيل البيانات، يرجى المحاولة مرة أخرى.');
     });
 }
 
