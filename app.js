@@ -1,14 +1,14 @@
-// ===== بيانات اللعبة والمخزون المتبقي للجوائز =====
+
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize50: 2,         // قسم 50 شيكل - شخصين فقط
-        bottle: 9,         // قسم مطرة - 15 مطرة
-        packagePalPay: 9   // قسم بكج بال باي - 10 بكجات
+        prize50: 2,        
+        bottle: 9,         
+        packagePalPay: 9  
     }
 };
 
-// ===== رابط Google Apps Script الخاص بك =====
+
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbyOJqiztzKudU1sTpt-Q57h_DjPBDx5mvfEjMDnGNOiZTEMrxrB6r27P9eOUD9WaCCeRQ/exec';
 
 // ===== حساب الزوايا الدقيقة بناءً على السهم العلوي الثابت (زاوية 0/360) =====
