@@ -1,17 +1,17 @@
-
+// ===== بيانات اللعبة (الجوائز الجديدة بالعدد المطلوب) =====
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize50: 2,
-        bottle: 9,         
-        packagePalPay: 9  
+        prize50: 2,         // قسم 50 شيكل - شخصين فقط
+        bottle: 15,         // قسم مطرة - 15 مطرة
+        packagePalPay: 10   // قسم بكج بال باي - 10 بكجات
     }
 };
 
 // ===== رابط Google Apps Script URL الخاص بك =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbyOJqiztzKudU1sTpt-Q57h_DjPBDx5mvfEjMDnGNOiZTEMrxrB6r27P9eOUD9WaCCeRQ/exec';
 
-// ===== تصحيح الزوايا لتطابق السهم العلوي الثابت (0/360 درجة) مية بالمية =====
+// ===== تصحيح الزوايا لتطابق حركة الدوران مع السهم العلوي الثابت مية بالمية =====
 const segments = [
     { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 120, stopAngle: 60, winnable: true, prizeKey: 'prize50' },
     { name: 'بكج بال باي', icon: '🎁', class: 'win-package', startAngle: 240, endAngle: 360, stopAngle: 180, winnable: true, prizeKey: 'packagePalPay' },
@@ -91,12 +91,12 @@ function startSpin() {
     const stopAngle = 360 - selectedSegment.stopAngle; // عكس الزاوية لتطابق السهم العلوي الثابت
     const totalRotation = baseRotations + stopAngle;
 
-    // إضافة تذبذب عشوائي طفيف ليقف السهم بشكل طبيعي ومريح داخل الـ 120 درجة للقطاع
+    // إضافة تذبذب عشوائي طفيف داخل الـ 120 درجة للقطاع المختار ليظهر الوقوف بشكل طبيعي
     const randomOffset = Math.floor(Math.random() * 40) - 20;
     const finalRotation = totalRotation + randomOffset;
 
     wheel.style.transition = 'none';
-    wheel.style.transform = `rotate(5deg)`;
+    wheel.style.transform = `rotate(0deg)`;
 
     setTimeout(() => {
         wheel.style.transition = 'transform 4s cubic-bezier(0.17,0.89,0.32,0.98)';
