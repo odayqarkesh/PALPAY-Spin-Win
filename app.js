@@ -1,21 +1,21 @@
-// ===== بيانات اللعبة (الجوائز الجديدة بالعدد المطلوب) =====
+// ===== بيانات اللعبة والمخزون المتبقي للجوائز =====
 let gameData = {
     playedIds: new Set(),
     prizes: {
         prize50: 2,         // قسم 50 شيكل - شخصين فقط
-        bottle: 15,         // قسم مطرة - 15 مطرة
-        packagePalPay: 10   // قسم بكج بال باي - 10 بكجات
+        bottle: 9,         // قسم مطرة - 15 مطرة
+        packagePalPay: 9   // قسم بكج بال باي - 10 بكجات
     }
 };
 
-// ===== رابط Google Apps Script URL الخاص بك =====
+// ===== رابط Google Apps Script الخاص بك =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbyOJqiztzKudU1sTpt-Q57h_DjPBDx5mvfEjMDnGNOiZTEMrxrB6r27P9eOUD9WaCCeRQ/exec';
 
-// ===== تصحيح الزوايا لتطابق حركة الدوران مع السهم العلوي الثابت مية بالمية =====
+// ===== حساب الزوايا الدقيقة بناءً على السهم العلوي الثابت (زاوية 0/360) =====
 const segments = [
-    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 120, stopAngle: 60, winnable: true, prizeKey: 'prize50' },
-    { name: 'بكج بال باي', icon: '🎁', class: 'win-package', startAngle: 240, endAngle: 360, stopAngle: 180, winnable: true, prizeKey: 'packagePalPay' },
-    { name: 'مطرة', icon: '🥤', class: 'win-bottle', startAngle: 120, endAngle: 240, stopAngle: 300, winnable: true, prizeKey: 'bottle' }
+    { name: '50 شيكل', icon: '💰', class: 'win-50', stopAngle: 60, prizeKey: 'prize50' },
+    { name: 'مطرة', icon: '🥤', class: 'win-bottle', stopAngle: 180, prizeKey: 'bottle' },
+    { name: 'بكج بال باي', icon: '🎁', class: 'win-package', stopAngle: 300, prizeKey: 'packagePalPay' }
 ];
 
 // ===== عناصر DOM =====
@@ -35,7 +35,6 @@ function validateInput() {
     const phone = document.getElementById('playerPhone').value.trim();
 
     document.getElementById('errorMsg').style.display = 'none';
-    document.getElementById('successMsg').style.display = 'none';
 
     if (!/^\d{9}$/.test(id)) { showError('يجب أن يكون رقم الهوية 9 أرقام فقط'); return false; }
     if (!/^05\d{8}$/.test(phone)) { showError('يجب أن يكون رقم الهاتف 10 أرقام ويبدأ بـ 05'); return false; }
@@ -50,7 +49,7 @@ function showError(message) {
     errorDiv.style.display = 'block';
 }
 
-// ===== مؤثر confetti (الحفلة) =====
+// ===== مؤثر confetti (الاحتفال بالفوز) =====
 function createConfetti() {
     const colors = ['#27ae60','#3498db','#f1c40f','#e74c3c'];
     for (let i=0; i<80; i++){
@@ -64,19 +63,15 @@ function createConfetti() {
     }
 }
 
-// ===== وظيفة بدء الدوران وحساب الزوايا ميكانيكياً وبصرياً =====
+// ===== وظيفة بدء الدوران وحساب حركة العجلة =====
 function startSpin() {
     if (!validateInput()) return;
 
     spinBtn.disabled = true;
     resultDiv.style.display = 'none';
 
-    // فلترة القطاعات المتاحة بناءً على المخزون المتبقي
-    const winnableSegments = segments.filter(segment => {
-        if (!segment.winnable) return false; 
-        if (gameData.prizes[segment.prizeKey] <= 0) return false;
-        return true;
-    });
+    // تصفية الجوائز المتاحة في المخزن
+    const winnableSegments = segments.filter(segment => gameData.prizes[segment.prizeKey] > 0);
 
     if (winnableSegments.length === 0) {
         showError('عذراً، لقد نفدت جميع الجوائز!');
@@ -84,14 +79,14 @@ function startSpin() {
         return;
     }
 
-    // اختيار قطاع عشوائي من الجوائز المتبقية
+    // اختيار الجائزة عشوائياً من المتاح
     const selectedSegment = winnableSegments[Math.floor(Math.random() * winnableSegments.length)];
 
-    const baseRotations = 5 * 360; // 5 لفات كاملة للمؤثرات البصرية
-    const stopAngle = 360 - selectedSegment.stopAngle; // عكس الزاوية لتطابق السهم العلوي الثابت
+    const baseRotations = 5 * 360; // 5 لفات كاملة للحركة البصرية
+    const stopAngle = 360 - selectedSegment.stopAngle; // عكس الاتجاه ليطابق السهم العلوي تماماً
     const totalRotation = baseRotations + stopAngle;
 
-    // إضافة تذبذب عشوائي طفيف داخل الـ 120 درجة للقطاع المختار ليظهر الوقوف بشكل طبيعي
+    // إضافة تذبذب خفيف ليقف السهم بمنتصف القطاع بشكل مريحوطبيعي
     const randomOffset = Math.floor(Math.random() * 40) - 20;
     const finalRotation = totalRotation + randomOffset;
 
@@ -112,12 +107,10 @@ function startSpin() {
         const timestamp = getGregorianNow();
 
         gameData.playedIds.add(id);
-        
-        // خصم الجائزة وتشغيل الحفلة
         gameData.prizes[selectedSegment.prizeKey]--;
         createConfetti();
 
-        // إرسال البيانات إلى Google Sheets
+        // إرسال البيانات فوراً إلى شيت جوجل الخاص بك
         sendToGoogleSheets(id, phone, prize, timestamp);
 
         updateStats();
@@ -129,51 +122,35 @@ function startSpin() {
     }, 4200);
 }
 
-// عرض نتيجة الفوز أسفل الصفحة
+// عرض النتيجة أسفل الشاشة
 function showResult(result) {
     resultDiv.innerHTML = `${result.icon} ${result.name} ${result.icon}`;
     resultDiv.className = `result ${result.class}`;
     resultDiv.style.display = 'flex';
 }
 
-// ===== تحديث عداد إجمالي اللاعبين =====
+// تحديث العداد السفلي
 function updateStats() {
     const totalPlayersElement = document.getElementById('totalPlayers');
     if (totalPlayersElement) {
         totalPlayersElement.textContent = gameData.playedIds.size;
-        if (totalPlayersElement.parentElement) {
-            totalPlayersElement.parentElement.classList.add('highlight');
-            setTimeout(() => totalPlayersElement.parentElement.classList.remove('highlight'), 1400);
-        }
     }
 }
 
-// ===== دالة إرسال البيانات الأصلية الشغالة والآمنة =====
+// إرسال البيانات المباشرة إلى Google Sheets
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
-    
     fetch(googleAppsScriptURL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
-    .then(() => {
-        console.log('Data sent to Google Sheets successfully.');
-    })
-    .catch(error => {
-        console.error('Error sending data to Google Sheets:', error);
-    });
+    .catch(error => console.error('Error sending data:', error));
 }
 
-// جلب الوقت الحالي بالتنسيق المطلوب
+// جلب التوقيت الحالي
 function getGregorianNow() {
     const d = new Date();
-    const YYYY = d.getFullYear();
-    const MM = String(d.getMonth() + 1).padStart(2, '0');
-    const DD = String(d.getDate()).padStart(2, '0');
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
-    const ss = String(d.getSeconds()).padStart(2, '0');
-    return `${YYYY}-${MM}-${DD} ${hh}:${mm}:${ss}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`;
 }
