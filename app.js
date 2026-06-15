@@ -11,13 +11,11 @@ let gameData = {
 // ===== رابط Google Apps Script URL الخاص بك =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbyOJqiztzKudU1sTpt-Q57h_DjPBDx5mvfEjMDnGNOiZTEMrxrB6r27P9eOUD9WaCCeRQ/exec';
 
-// ===== تعريف القطاعات (الـ 5 قطاعات المتساوية بالجوائز الجديدة) =====
+// ===== تصحيح الكلاسات والأسماء والزوايا لـ 3 قطاعات متساوية (120 درجة) =====
 const segments = [
-    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 72, stopAngle: 36, winnable: true, prizeKey: 'prize50' },
-    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 72, endAngle: 144, stopAngle: 108, winnable: true, prizeKey: 'bottle' },
-    { name: 'بكج بال باي', icon: '🎁', class: 'win-25', startAngle: 144, endAngle: 216, stopAngle: 180, winnable: true, prizeKey: 'packagePalPay' },
-    { name: 'مطرة', icon: '🥤', class: 'win-mug', startAngle: 216, endAngle: 288, stopAngle: 252, winnable: true, prizeKey: 'bottle' },
-    { name: 'بكج بال باي', icon: '🎁', class: 'win-sunshade', startAngle: 288, endAngle: 360, stopAngle: 324, winnable: true, prizeKey: 'packagePalPay' }
+    { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 120, stopAngle: 60, winnable: true, prizeKey: 'prize50' },
+    { name: 'مطرة', icon: '🥤', class: 'win-bottle', startAngle: 120, endAngle: 240, stopAngle: 180, winnable: true, prizeKey: 'bottle' },
+    { name: 'بكج بال باي', icon: '🎁', class: 'win-package', startAngle: 240, endAngle: 360, stopAngle: 300, winnable: true, prizeKey: 'packagePalPay' }
 ];
 
 // ===== عناصر DOM =====
@@ -50,12 +48,6 @@ function showError(message) {
     const errorDiv = document.getElementById('errorMsg');
     errorDiv.textContent = message;
     errorDiv.style.display = 'block';
-}
-
-function showSuccess(message) {
-    const successDiv = document.getElementById('successMsg');
-    successDiv.textContent = message;
-    successDiv.style.display = 'block';
 }
 
 // ===== مؤثر confetti =====
@@ -99,12 +91,16 @@ function startSpin() {
     const stopAngle = 360 - selectedSegment.stopAngle;
     const totalRotation = baseRotations + stopAngle;
 
+    // إضافة تذبذب عشوائي طفيف ليقف السهم بشكل طبيعي داخل الـ 120 درجة العريضة
+    const randomOffset = Math.floor(Math.random() * 40) - 20;
+    const finalRotation = totalRotation + randomOffset;
+
     wheel.style.transition = 'none';
     wheel.style.transform = `rotate(5deg)`;
 
     setTimeout(() => {
         wheel.style.transition = 'transform 4s cubic-bezier(0.17,0.89,0.32,0.98)';
-        wheel.style.transform = `rotate(${totalRotation}deg)`;
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
     }, 50);
 
     setTimeout(() => {
@@ -121,7 +117,7 @@ function startSpin() {
         gameData.prizes[selectedSegment.prizeKey]--;
         createConfetti();
 
-        // إرسال البيانات بنفس الطريقة القديمة الشغالة عندك مية بالمية
+        // إرسال البيانات بالطريقة القديمة الشغالة والآمنة
         sendToGoogleSheets(id, phone, prize, timestamp);
 
         updateStats();
@@ -142,16 +138,17 @@ function showResult(result) {
 
 // ===== تحديث الإحصائيات =====
 function updateStats() {
-    document.getElementById('totalPlayers').textContent = gameData.playedIds.size;
-    
     const totalPlayersElement = document.getElementById('totalPlayers');
-    if (totalPlayersElement && totalPlayersElement.parentElement) {
-        totalPlayersElement.parentElement.classList.add('highlight');
-        setTimeout(() => totalPlayersElement.parentElement.classList.remove('highlight'), 1400);
+    if (totalPlayersElement) {
+        totalPlayersElement.textContent = gameData.playedIds.size;
+        if (totalPlayersElement.parentElement) {
+            totalPlayersElement.parentElement.classList.add('highlight');
+            setTimeout(() => totalPlayersElement.parentElement.classList.remove('highlight'), 1400);
+        }
     }
 }
 
-// ===== دالة إرسال البيانات القديمة الشغالة عندك بدون أي تعديل =====
+// ===== دالة إرسال البيانات الأصلية الشغالة عندك مية بالمية =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
     
@@ -163,11 +160,9 @@ function sendToGoogleSheets(id, phone, prize, timestamp) {
     })
     .then(() => {
         console.log('Data sent to Google Sheets successfully.');
-        showSuccess('تم تسجيل فوزك بنجاح!');
     })
     .catch(error => {
         console.error('Error sending data to Google Sheets:', error);
-        showError('حدث خطأ أثناء تسجيل البيانات، يرجى المحاولة مرة أخرى.');
     });
 }
 
