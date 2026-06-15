@@ -151,7 +151,7 @@ body{
     66% { transform: translateY(-6px) translateX(3px); }
 }
 
-/* الأبعاد الصغيرة */
+/* الأبعاد الصغيرة للشاشات التفاعلية والتابلت */
 @media (max-width: 992px) {
     body {
         flex-direction: column;
@@ -182,7 +182,7 @@ body{
     }
 }
 
-/* عنوان */
+/* عنوان اللعبة */
 h1{
     color:#333;
     margin-bottom: clamp(20px, 3vw, 35px);
@@ -190,7 +190,7 @@ h1{
     text-shadow: 2px 2px 4px rgba(0,0,0,0.08);
 }
 
-/* قسم الإدخال */
+/* قسم الإدخال البيانات */
 .game-section {
     margin-bottom: 25px;
     display:flex;
@@ -212,7 +212,7 @@ input{
 }
 input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,126,234,0.25); }
 
-/* العجلة */
+/* حاوية العجلة */
 .wheel-container{
     position:relative;
     display:flex;
@@ -228,7 +228,6 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     border: 8px solid #333;
     transition: transform 4s cubic-bezier(0.17, 0.89, 0.32, 0.98);
     transform: rotate(0deg);
-    /* التعديل: تقسيم خلفية العجلة الدائرية بالتساوي على 3 أقسام (كل لون 120 درجة) */
     background: conic-gradient(
         #e74c3c 0deg 120deg,
         #f1c40f 120deg 240deg,
@@ -239,7 +238,7 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     justify-content:center;
 }
 
-/* تموضع جديد لتسميات القطاعات الـ 3 (توسيط دقيق) */
+/* تموضع تسميات القطاعات الـ 3 بالتساوي */
 .segment-label{
     position:absolute;
     width: 50%;
@@ -261,20 +260,19 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     padding-top: 25px;
 }
 
-/* توزيع الزوايا والتدوير الداخلي للحفاظ على استقامة النصوص للـ 3 خانات */
+/* توزيع الزوايا بشكل متناسق مع الخلفية */
 .label-1 { transform: rotate(60deg); }
 .label-2 { transform: rotate(180deg); }
 .label-3 { transform: rotate(300deg); }
 
-.label-1 > div { transform: rotate(-60deg); }
-.label-2 > div { transform: rotate(-180deg); }
-.label-3 > div { transform: rotate(-300deg); }
+/* الحفاظ على استقامة النصوص لتكون مقروءة بشكل مريح وجميل */
+.segment-label > div { transform: rotate(90deg); }
 
-/* أيقونات ونص داخل كل تسمية */
+/* أيقونات ونص داخل كل قطاع */
 .seg-icon{ font-size: clamp(24px, 3.5vw, 32px); }
 .seg-text{ font-size: clamp(13px, 2vw, 17px); margin-top: 8px; }
 
-/* السهم العلوي */
+/* السهم العلوي الثابت */
 .arrow{
     position:absolute;
     top: -20px;
@@ -287,7 +285,7 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     z-index:10;
 }
 
-/* الأزرار */
+/* أزرار اللعب */
 .spin-btn{
     background: linear-gradient(45deg,#667eea,#764ba2);
     color:white; border:none; padding:14px 30px; border-radius:30px;
@@ -298,7 +296,7 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
 .spin-btn:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
 .spin-btn:disabled{ opacity:0.5; cursor:not-allowed; }
 
-/* نتيجة الفوز */
+/* بنر نتيجة الفوز الجديد والمحدث */
 .result{
     margin: 25px 0;
     padding:16px; border-radius:12px; font-size:clamp(18px,2.2vw,26px);
@@ -308,7 +306,7 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
 .result.win-bottle { background: linear-gradient(45deg,#f1c40f,#f39c12); color:#111; }
 .result.win-package { background: linear-gradient(45deg,#3498db,#2980b9); color:#fff; }
 
-/* قسم الإحصائيات */
+/* قسم الإحصائيات (العداد السفلي) */
 .stats {
     margin: 25px 0;
     display: flex;
@@ -335,10 +333,10 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
 .error{ color:#d9534f; background: rgba(217, 83, 79, 0.1); border: 1px solid rgba(217, 83, 79, 0.2); padding: 10px; border-radius: 8px; font-weight:700; margin:8px 0; display:block; }
 .success{ color:#5cb85c; background: rgba(92, 184, 92, 0.1); border: 1px solid rgba(92, 184, 92, 0.2); padding: 10px; border-radius: 8px; font-weight:700; margin:8px 0; display:block; }
 
-/* confetti */
+/* تأثير الـ confetti الجانبي */
 @keyframes confetti { 0%{transform:translateY(0) rotate(0); opacity:1} 100%{transform:translateY(500px) rotate(360deg); opacity:0} }
 .confetti{ position:fixed; width:10px; height:10px; animation:confetti 2s ease-out forwards; z-index:1000; }
 
-/* تدرجات تفاعلية */
+/* حركة النبض للعداد عند الإضافة */
 .stat-item.highlight{ animation:pulse 1.5s infinite; box-shadow:0 0 15px rgba(102, 126, 234, 0.7); }
 @keyframes pulse { 0%{transform:scale(1)} 50%{transform:scale(1.05)} 100%{transform:scale(1)} }
