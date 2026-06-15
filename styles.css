@@ -305,8 +305,8 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     font-weight:bold; min-height:65px; display:flex; align-items:center; justify-content:center;
 }
 .result.win-50 { background: linear-gradient(45deg,#e74c3c,#c0392b); color:#fff; }
-.result.win-mug { background: linear-gradient(45deg,#f1c40f,#f39c12); color:#111; }
-.result.win-25 { background: linear-gradient(45deg,#3498db,#2980b9); color:#fff; }
+.result.win-bottle { background: linear-gradient(45deg,#f1c40f,#f39c12); color:#111; }
+.result.win-package { background: linear-gradient(45deg,#3498db,#2980b9); color:#fff; }
 
 /* قسم الإحصائيات */
 .stats {
