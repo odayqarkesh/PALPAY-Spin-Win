@@ -1,21 +1,21 @@
-// ===== بيانات اللعبة (الجوائز الجديدة بالعدد المطلوب) =====
+
 let gameData = {
     playedIds: new Set(),
     prizes: {
-        prize50: 2,         // قسم 50 شيكل - شخصين فقط
-        bottle: 15,         // قسم مطرة - 15 مطرة
-        packagePalPay: 10   // قسم بكج بال باي - 10 بكجات
+        prize50: 2,
+        bottle: 9,         
+        packagePalPay: 9  
     }
 };
 
 // ===== رابط Google Apps Script URL الخاص بك =====
 const googleAppsScriptURL = 'https://script.google.com/macros/s/AKfycbyOJqiztzKudU1sTpt-Q57h_DjPBDx5mvfEjMDnGNOiZTEMrxrB6r27P9eOUD9WaCCeRQ/exec';
 
-// ===== تصحيح الكلاسات والأسماء والزوايا لـ 3 قطاعات متساوية (120 درجة) =====
+// ===== تصحيح الزوايا لتطابق السهم العلوي الثابت (0/360 درجة) مية بالمية =====
 const segments = [
     { name: '50 شيكل', icon: '💰', class: 'win-50', startAngle: 0, endAngle: 120, stopAngle: 60, winnable: true, prizeKey: 'prize50' },
-    { name: 'مطرة', icon: '🥤', class: 'win-bottle', startAngle: 120, endAngle: 240, stopAngle: 180, winnable: true, prizeKey: 'bottle' },
-    { name: 'بكج بال باي', icon: '🎁', class: 'win-package', startAngle: 240, endAngle: 360, stopAngle: 300, winnable: true, prizeKey: 'packagePalPay' }
+    { name: 'بكج بال باي', icon: '🎁', class: 'win-package', startAngle: 240, endAngle: 360, stopAngle: 180, winnable: true, prizeKey: 'packagePalPay' },
+    { name: 'مطرة', icon: '🥤', class: 'win-bottle', startAngle: 120, endAngle: 240, stopAngle: 300, winnable: true, prizeKey: 'bottle' }
 ];
 
 // ===== عناصر DOM =====
@@ -23,7 +23,7 @@ const wheel = document.getElementById('wheel');
 const spinBtn = document.getElementById('spinBtn');
 const resultDiv = document.getElementById('result');
 
-// تهيئة الأحداث
+// تهيئة الأحداث عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', function() {
     spinBtn.addEventListener('click', startSpin);
     updateStats();
@@ -50,7 +50,7 @@ function showError(message) {
     errorDiv.style.display = 'block';
 }
 
-// ===== مؤثر confetti =====
+// ===== مؤثر confetti (الحفلة) =====
 function createConfetti() {
     const colors = ['#27ae60','#3498db','#f1c40f','#e74c3c'];
     for (let i=0; i<80; i++){
@@ -64,7 +64,7 @@ function createConfetti() {
     }
 }
 
-// ===== وظيفة بدء الدوران =====
+// ===== وظيفة بدء الدوران وحساب الزوايا ميكانيكياً وبصرياً =====
 function startSpin() {
     if (!validateInput()) return;
 
@@ -87,11 +87,11 @@ function startSpin() {
     // اختيار قطاع عشوائي من الجوائز المتبقية
     const selectedSegment = winnableSegments[Math.floor(Math.random() * winnableSegments.length)];
 
-    const baseRotations = 5 * 360;
-    const stopAngle = 360 - selectedSegment.stopAngle;
+    const baseRotations = 5 * 360; // 5 لفات كاملة للمؤثرات البصرية
+    const stopAngle = 360 - selectedSegment.stopAngle; // عكس الزاوية لتطابق السهم العلوي الثابت
     const totalRotation = baseRotations + stopAngle;
 
-    // إضافة تذبذب عشوائي طفيف ليقف السهم بشكل طبيعي داخل الـ 120 درجة العريضة
+    // إضافة تذبذب عشوائي طفيف ليقف السهم بشكل طبيعي ومريح داخل الـ 120 درجة للقطاع
     const randomOffset = Math.floor(Math.random() * 40) - 20;
     const finalRotation = totalRotation + randomOffset;
 
@@ -117,7 +117,7 @@ function startSpin() {
         gameData.prizes[selectedSegment.prizeKey]--;
         createConfetti();
 
-        // إرسال البيانات بالطريقة القديمة الشغالة والآمنة
+        // إرسال البيانات إلى Google Sheets
         sendToGoogleSheets(id, phone, prize, timestamp);
 
         updateStats();
@@ -129,14 +129,14 @@ function startSpin() {
     }, 4200);
 }
 
-// عرض النتيجة
+// عرض نتيجة الفوز أسفل الصفحة
 function showResult(result) {
     resultDiv.innerHTML = `${result.icon} ${result.name} ${result.icon}`;
     resultDiv.className = `result ${result.class}`;
     resultDiv.style.display = 'flex';
 }
 
-// ===== تحديث الإحصائيات =====
+// ===== تحديث عداد إجمالي اللاعبين =====
 function updateStats() {
     const totalPlayersElement = document.getElementById('totalPlayers');
     if (totalPlayersElement) {
@@ -148,7 +148,7 @@ function updateStats() {
     }
 }
 
-// ===== دالة إرسال البيانات الأصلية الشغالة عندك مية بالمية =====
+// ===== دالة إرسال البيانات الأصلية الشغالة والآمنة =====
 function sendToGoogleSheets(id, phone, prize, timestamp) {
     const data = { id, phone, prize, timestamp };
     
@@ -166,6 +166,7 @@ function sendToGoogleSheets(id, phone, prize, timestamp) {
     });
 }
 
+// جلب الوقت الحالي بالتنسيق المطلوب
 function getGregorianNow() {
     const d = new Date();
     const YYYY = d.getFullYear();
