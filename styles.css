@@ -230,8 +230,8 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     transform: rotate(0deg);
     background: conic-gradient(
         #e74c3c 0deg 120deg,
-        #f1c40f 120deg 240deg,
-        #3498db 240deg 360deg
+        #3498db 120deg 240deg,
+        #f1c40f 240deg 360deg
     );
     display:flex;
     align-items:center;
@@ -260,13 +260,13 @@ input:focus{ outline:none; border-color:#667eea; box-shadow:0 0 10px rgba(102,12
     padding-top: 25px;
 }
 
-/* توزيع الزوايا بشكل متناسق مع الخلفية */
+/* توزيع زوايا العجلة بالتناظر البصري التام */
 .label-1 { transform: rotate(60deg); }
 .label-2 { transform: rotate(180deg); }
 .label-3 { transform: rotate(300deg); }
 
-/* الحفاظ على استقامة النصوص لتكون مقروءة بشكل مريح وجميل */
-.segment-label > div { transform: rotate(90deg); }
+/* إبقاء جميع النصوص مستقيمة ومقروءة بشكل طبيعي للمستخدم */
+.segment-label > div { transform: rotate(0deg); }
 
 /* أيقونات ونص داخل كل قطاع */
 .seg-icon{ font-size: clamp(24px, 3.5vw, 32px); }
